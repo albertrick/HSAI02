@@ -8,11 +8,13 @@ import androidx.annotation.NonNull;
 
 import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.type.Content;
+import com.google.ai.client.generativeai.type.FileDataPart;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.ai.client.generativeai.type.ImagePart;
 import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.TextPart;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +73,7 @@ public class GeminiManager {
                     @Override
                     public void resumeWith(@NonNull Object result) {
                         if (result instanceof Result.Failure) {
-                            callback.onError(((Result.Failure) result).exception);
+                            callback.onFailure(((Result.Failure) result).exception);
                         } else {
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
@@ -108,7 +110,7 @@ public class GeminiManager {
                     public void resumeWith(@NonNull Object result) {
                         if (result instanceof Result.Failure) {
                             Log.i("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onError(((Result.Failure) result).exception);
+                            callback.onFailure(((Result.Failure) result).exception);
                         } else {
                             Log.i("GeminiManager", "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
@@ -119,17 +121,17 @@ public class GeminiManager {
     }
 
     /**
-     * Sends a text prompt along with several photos to the Gemini model and receives a text response.
+     * Sends a text prompt along with several files to the Gemini model and receives a text response.
      *
-     * @param prompt   The text prompt to send to the model.
-     * @param photos   The photos to send to the model.
-     * @param callback The callback to receive the response or error.
+     * @param prompt    The text prompt to send to the model.
+     * @param files     The files to send to the model.
+     * @param callback  The callback to receive the response or error.
      */
-    public void sendMessageWithPhotos(String prompt, Bitmap[] photos, GeminiCallback callback) {
+    public void sendMessageWithFiles(String prompt, File[] files, GeminiCallback callback) {
         List<Part> parts = new ArrayList<>();
         parts.add(new TextPart(prompt));
-        for (Bitmap photo : photos) {
-            parts.add(new ImagePart(photo));
+        for (File file : files) {
+            parts.add(new FilePart(file));
         }
 
         Content[] content = new Content[1];
@@ -148,7 +150,7 @@ public class GeminiManager {
                     public void resumeWith(@NonNull Object result) {
                         if (result instanceof Result.Failure) {
                             Log.i("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onError(((Result.Failure) result).exception);
+                            callback.onFailure(((Result.Failure) result).exception);
                         } else {
                             Log.i("GeminiManager", "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
