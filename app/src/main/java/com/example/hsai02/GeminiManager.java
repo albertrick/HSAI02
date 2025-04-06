@@ -1,10 +1,13 @@
 package com.example.hsai02;
 
-import android.content.res.Resources;
+import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.example.hsai02.R;
 
 import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.type.Content;
@@ -31,6 +34,7 @@ import kotlin.coroutines.EmptyCoroutineContext;
 public class GeminiManager {
     private static GeminiManager instance;
     private GenerativeModel gemini;
+    String API_Key = BuildConfig.GEMINI_API_KEY;
 
     /**
      * Private constructor to enforce the Singleton pattern.
@@ -39,7 +43,7 @@ public class GeminiManager {
     private GeminiManager() {
         gemini = new GenerativeModel(
                 "gemini-2.0-flash",
-                Resources.getSystem().getString(R.string.Gemini_API_Key)
+                API_Key
         );
     }
 
@@ -61,7 +65,7 @@ public class GeminiManager {
      * @param prompt   The text prompt to send to the model.
      * @param callback The callback to receive the response or error.
      */
-    public void sendMessage(String prompt, GeminiCallback callback) {
+    public void sendTextPrompt(String prompt, GeminiCallback callback) {
         gemini.generateContent(prompt,
                 new Continuation<GenerateContentResponse>() {
                     @NonNull
