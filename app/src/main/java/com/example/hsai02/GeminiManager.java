@@ -3,6 +3,8 @@ package com.example.hsai02;
 import static androidx.core.content.res.TypedArrayUtils.getString;
 import static androidx.core.content.res.TypedArrayUtils.getText;
 
+import static com.example.hsai02.Keys.Gemini_API_Key;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -35,18 +37,15 @@ import kotlin.coroutines.EmptyCoroutineContext;
 public class GeminiManager {
     private static GeminiManager instance;
     private GenerativeModel gemini;
-//    String API_Key = BuildConfig.API_KEY;
-    String API_Key;
 
     /**
      * Private constructor to enforce the Singleton pattern.
      * Initializes the {@link GenerativeModel} with the specified model name and API key.
      */
-    private GeminiManager(Context context) {
-        API_Key = context.getString(R.string.Gemini_API_Key);
+    private GeminiManager() {
         gemini = new GenerativeModel(
                 "gemini-2.0-flash",
-                API_Key
+                Gemini_API_Key
         );
     }
 
@@ -55,9 +54,9 @@ public class GeminiManager {
      *
      * @return The singleton instance of {@code GeminiManager}.
      */
-    public static GeminiManager getInstance(Context context) {
+    public static GeminiManager getInstance() {
         if (instance == null) {
-            instance = new GeminiManager(context);
+            instance = new GeminiManager();
         }
         return instance;
     }
@@ -96,7 +95,7 @@ public class GeminiManager {
      * @param photo    The photo to send to the model.
      * @param callback The callback to receive the response or error.
      */
-    public void sendMessageWithPhoto(String prompt, Bitmap photo, GeminiCallback callback) {
+    public void sendTextWithPhotoPrompt(String prompt, Bitmap photo, GeminiCallback callback) {
         List<Part> parts = new ArrayList<>();
         parts.add(new TextPart(prompt));
         parts.add(new ImagePart(photo));

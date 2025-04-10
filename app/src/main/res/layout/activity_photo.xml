@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.MainActivity">
+    tools:context=".Activities.PhotoActivity">
 
     <Space
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_weight="5" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="8"
+        android:layout_weight="90"
         android:gravity="center"
         android:orientation="vertical"
         android:overScrollMode="never">
@@ -29,7 +29,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Text prompt"
+            android:text="Photo with text prompt"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -38,30 +38,13 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <EditText
-            android:id="@+id/eTLanguage"
+        <ImageView
+            android:id="@+id/iV"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:gravity="left|center_vertical"
-            android:hint="language"
-            android:inputType="text" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5" />
-
-        <EditText
-            android:id="@+id/eTWords"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:gravity="left|center_vertical"
-            android:hint="number of words"
-            android:inputType="number" />
+            android:layout_weight="2.5"
+            android:adjustViewBounds="false"
+            android:scaleType="centerInside" />
 
         <Space
             android:layout_width="match_parent"
@@ -72,8 +55,8 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:onClick="textPrompt"
-            android:text="Prompt" />
+            android:onClick="photoPrompt"
+            android:text="Take photo" />
 
         <Space
             android:layout_width="match_parent"
@@ -81,12 +64,12 @@
             android:layout_weight="0.5" />
 
         <TextView
-            android:id="@+id/tVResult"
+            android:id="@+id/tVRecipe"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="6"
             android:gravity="center"
-            android:hint="Your story will be displayed here..."
+            android:hint="Your recipe will be displayed here..."
             android:scrollbars="vertical"
             android:verticalScrollbarPosition="defaultPosition" />
 
@@ -98,7 +81,7 @@
 
     <Space
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_weight="5" />
 
 </LinearLayout>

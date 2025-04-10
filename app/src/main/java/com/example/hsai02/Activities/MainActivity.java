@@ -1,20 +1,30 @@
-package com.example.hsai02;
+package com.example.hsai02.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.hsai02.GeminiCallback;
+import com.example.hsai02.GeminiManager;
+import com.example.hsai02.R;
 
 public class MainActivity extends AppCompatActivity {
     EditText eTLanguage, eTWords;
     TextView tVResult;
     GeminiManager geminiManager;
+    private final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         tVResult = findViewById(R.id.tVResult);
         tVResult.setMovementMethod(new ScrollingMovementMethod());
 
-        geminiManager = GeminiManager.getInstance(this);
+        geminiManager = GeminiManager.getInstance();
 
     }
 
@@ -51,15 +61,42 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(String result) {
                     pD.dismiss();
                     tVResult.setText(result);
+                    Log.i(TAG, "textPrompt/ Success");
                 }
 
                 @Override
                 public void onFailure(Throwable error) {
                     pD.dismiss();
-                    tVResult.setText("Error: " + error.getMessage());
+                    tVResult.setText("Failed prompting Gemini");
+                    Log.e(TAG, "textPrompt/ Error: " + error.getMessage());
                 }
             });
         }
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int id = item.getItemId();
+        Intent intent;
+        if (id == R.id.menuPhoto) {
+            intent = new Intent(this, PhotoActivity.class);
+            startActivity(intent);
+//        } else if (st.equals("Green")) {
+//            RL.setBackgroundColor(Color.GREEN);
+//        } else if (st.equals("Yellow")) {
+//            RL.setBackgroundColor(Color.YELLOW);
+//        } else if (st.equals("White")) {
+//            RL.setBackgroundColor(Color.WHITE);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
