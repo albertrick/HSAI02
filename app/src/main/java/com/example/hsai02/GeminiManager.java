@@ -1,17 +1,18 @@
 package com.example.hsai02;
 
-import android.app.Application;
+import static androidx.core.content.res.TypedArrayUtils.getString;
+import static androidx.core.content.res.TypedArrayUtils.getText;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-
-import com.example.hsai02.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.type.Content;
-import com.google.ai.client.generativeai.type.FileDataPart;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.ai.client.generativeai.type.ImagePart;
 import com.google.ai.client.generativeai.type.Part;
@@ -34,13 +35,15 @@ import kotlin.coroutines.EmptyCoroutineContext;
 public class GeminiManager {
     private static GeminiManager instance;
     private GenerativeModel gemini;
-    String API_Key = BuildConfig.GEMINI_API_KEY;
+//    String API_Key = BuildConfig.API_KEY;
+    String API_Key;
 
     /**
      * Private constructor to enforce the Singleton pattern.
      * Initializes the {@link GenerativeModel} with the specified model name and API key.
      */
-    private GeminiManager() {
+    private GeminiManager(Context context) {
+        API_Key = context.getString(R.string.Gemini_API_Key);
         gemini = new GenerativeModel(
                 "gemini-2.0-flash",
                 API_Key
@@ -52,9 +55,9 @@ public class GeminiManager {
      *
      * @return The singleton instance of {@code GeminiManager}.
      */
-    public static GeminiManager getInstance() {
+    public static GeminiManager getInstance(Context context) {
         if (instance == null) {
-            instance = new GeminiManager();
+            instance = new GeminiManager(context);
         }
         return instance;
     }

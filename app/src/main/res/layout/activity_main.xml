@@ -87,7 +87,9 @@
             android:layout_height="0dp"
             android:layout_weight="6"
             android:gravity="center"
-            android:hint="Your story will be displayed here..." />
+            android:hint="Your story will be displayed here..."
+            android:scrollbars="vertical"
+            android:verticalScrollbarPosition="defaultPosition" />
 
         <Space
             android:layout_width="match_parent"

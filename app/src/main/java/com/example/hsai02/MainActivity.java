@@ -1,8 +1,11 @@
 package com.example.hsai02;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -21,8 +24,9 @@ public class MainActivity extends AppCompatActivity {
         eTLanguage = findViewById(R.id.eTLanguage);
         eTWords = findViewById(R.id.eTWords);
         tVResult = findViewById(R.id.tVResult);
+        tVResult.setMovementMethod(new ScrollingMovementMethod());
 
-        geminiManager = GeminiManager.getInstance();
+        geminiManager = GeminiManager.getInstance(this);
 
     }
 
@@ -33,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         if (language.isEmpty() || words.isEmpty()) {
             tVResult.setText("Please enter both language and words.");
         } else {
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             String prompt = "Create a story in " + language + " with " + words +
                     " words. return only the name of the story and the story.";
             ProgressDialog pD = new ProgressDialog(this);
