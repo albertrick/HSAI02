@@ -140,7 +140,8 @@ public class PhotoActivity extends AppCompatActivity {
                 pD.setCancelable(false);
                 pD.show();
                 String prompt = "כתוב לי מהו הפרי או הירק שצולם ובנוסף תן לי מתכון אשר כולל אותו.\n" +
-                        "אם אתה לא מוצא פרי או ירק בתמונה תן לי הנחיה לצלם את התמונה מחדש כך שהפרי או הירק יופיע בבירור בתמונה.";
+                        "אם אתה לא מוצא פרי או ירק בתמונה תן לי הנחיה לצלם את התמונה מחדש,\n" +
+                        "כך שהפרי או הירק יופיע בבירור בתמונה.";
                 geminiManager.sendTextWithPhotoPrompt(prompt, imageBitmap, new GeminiCallback() {
                     @Override
                     public void onSuccess(String result) {

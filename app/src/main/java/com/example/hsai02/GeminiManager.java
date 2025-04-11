@@ -1,31 +1,19 @@
 package com.example.hsai02;
 
-import static androidx.core.content.res.TypedArrayUtils.getString;
-import static androidx.core.content.res.TypedArrayUtils.getText;
-
 import static com.example.hsai02.Keys.Gemini_API_Key;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.ai.client.generativeai.GenerativeModel;
-import com.google.ai.client.generativeai.type.BlobPart;
 import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.ai.client.generativeai.type.ImagePart;
 import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.TextPart;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,8 +73,10 @@ public class GeminiManager {
                     @Override
                     public void resumeWith(@NonNull Object result) {
                         if (result instanceof Result.Failure) {
+                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
                             callback.onFailure(((Result.Failure) result).exception);
                         } else {
+                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
                     }
@@ -114,17 +104,16 @@ public class GeminiManager {
                     @NonNull
                     @Override
                     public CoroutineContext getContext() {
-                        Log.i("GeminiManager", "getContext");
                         return EmptyCoroutineContext.INSTANCE;
                     }
 
                     @Override
                     public void resumeWith(@NonNull Object result) {
                         if (result instanceof Result.Failure) {
-                            Log.i("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
+                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
                             callback.onFailure(((Result.Failure) result).exception);
                         } else {
-                            Log.i("GeminiManager", "Success: " + ((GenerateContentResponse) result).getText());
+                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
                     }
