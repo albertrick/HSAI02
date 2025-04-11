@@ -8,6 +8,9 @@
         android:id="@+id/menuPhoto"
         android:title="Photo prompt" />
     <item
+        android:id="@+id/menuPhotos"
+        android:title="Photos prompt" />
+    <item
         android:id="@+id/menuFiles"
         android:title="Files prompt" />
     <item

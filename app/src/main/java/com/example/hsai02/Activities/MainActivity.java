@@ -86,8 +86,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
         Intent intent;
-        if (id == R.id.menuPhoto) {
+        if (id == R.id.menuText) {
+        } else if (id == R.id.menuPhoto) {
             intent = new Intent(this, PhotoActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.menuPhotos) {
+            intent = new Intent(this, PhotosActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.menuFiles) {
+            intent = new Intent(this, FilesActivity.class);
             startActivity(intent);
 //        } else if (st.equals("Green")) {
 //            RL.setBackgroundColor(Color.GREEN);

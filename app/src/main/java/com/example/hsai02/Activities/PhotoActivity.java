@@ -45,7 +45,6 @@ public class PhotoActivity extends AppCompatActivity {
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 102;
     private static final int REQUEST_FULL_IMAGE_CAPTURE = 202;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +56,6 @@ public class PhotoActivity extends AppCompatActivity {
 
         geminiManager = GeminiManager.getInstance();
     }
-
 
     @Override
     protected void onResume() {
@@ -175,7 +173,8 @@ public class PhotoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
         Intent intent;
-        if (id == R.id.menuText) {
+        if (id == R.id.menuPhoto) {
+        } else if (id == R.id.menuText) {
             finish();
 //        } else if (st.equals("Green")) {
 //            RL.setBackgroundColor(Color.GREEN);

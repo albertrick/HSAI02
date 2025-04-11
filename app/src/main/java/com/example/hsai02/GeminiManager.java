@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.ai.client.generativeai.GenerativeModel;
+import com.google.ai.client.generativeai.type.BlobPart;
 import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.ai.client.generativeai.type.ImagePart;
@@ -21,6 +22,10 @@ import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.TextPart;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +42,7 @@ import kotlin.coroutines.EmptyCoroutineContext;
 public class GeminiManager {
     private static GeminiManager instance;
     private GenerativeModel gemini;
+    private final String TAG = "GeminiManager";
 
     /**
      * Private constructor to enforce the Singleton pattern.
@@ -127,21 +133,24 @@ public class GeminiManager {
     }
 
     /**
-     * Sends a text prompt along with several files to the Gemini model and receives a text response.
+     * Sends a text prompt along with several photos to the Gemini model and receives a text response.
      *
      * @param prompt    The text prompt to send to the model.
-     * @param files     The files to send to the model.
+     * @param photos    The files to send to the model.
      * @param callback  The callback to receive the response or error.
      */
-    public void sendMessageWithFiles(String prompt, File[] files, GeminiCallback callback) {
+    public void sendTextWithPhotosPrompt(String prompt, ArrayList<Bitmap> photos, GeminiCallback callback) {
+        Log.i(TAG, "sendTextWithFilesPrompt/ prompt: " + prompt);
         List<Part> parts = new ArrayList<>();
         parts.add(new TextPart(prompt));
-        for (File file : files) {
-            parts.add(new FilePart(file));
+        for (Bitmap photo : photos) {
+            parts.add(new ImagePart(photo));
         }
+        Log.i(TAG, "sendTextWithFilesPrompt/ parts: " + parts);
 
         Content[] content = new Content[1];
         content[0] = new Content(parts);
+        Log.i(TAG, "sendTextWithFilesPrompt/ content: " + content);
 
         gemini.generateContent(content,
                 new Continuation<GenerateContentResponse>() {
@@ -165,4 +174,47 @@ public class GeminiManager {
                 }
         );
     }
+
+//    /**
+//     * Sends a text prompt along with several files to the Gemini model and receives a text response.
+//     *
+//     * @param prompt    The text prompt to send to the model.
+//     * @param files     The files to send to the model.
+//     * @param callback  The callback to receive the response or error.
+//     */
+//    public void sendTextWithFilesPrompt(String prompt, ArrayList<File> files, GeminiCallback callback) {
+//        Log.i(TAG, "sendTextWithFilesPrompt/ prompt: " + prompt);
+//        List<Part> parts = new ArrayList<>();
+//        parts.add(new TextPart(prompt));
+//        for (File file : files) {
+//            parts.add(new BlobPart(file));
+//        }
+//        Log.i(TAG, "sendTextWithFilesPrompt/ parts: " + parts);
+//
+//        Content[] content = new Content[1];
+//        content[0] = new Content(parts);
+//        Log.i(TAG, "sendTextWithFilesPrompt/ content: " + content);
+//
+//        gemini.generateContent(content,
+//                new Continuation<GenerateContentResponse>() {
+//                    @NonNull
+//                    @Override
+//                    public CoroutineContext getContext() {
+//                        Log.i("GeminiManager", "getContext");
+//                        return EmptyCoroutineContext.INSTANCE;
+//                    }
+//
+//                    @Override
+//                    public void resumeWith(@NonNull Object result) {
+//                        if (result instanceof Result.Failure) {
+//                            Log.i("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
+//                            callback.onFailure(((Result.Failure) result).exception);
+//                        } else {
+//                            Log.i("GeminiManager", "Success: " + ((GenerateContentResponse) result).getText());
+//                            callback.onSuccess(((GenerateContentResponse) result).getText());
+//                        }
+//                    }
+//                }
+//        );
+//    }
 }
