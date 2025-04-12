@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.menuFiles) {
             intent = new Intent(this, FilesActivity.class);
             startActivity(intent);
+        } else if (id == R.id.menuChat) {
+            intent = new Intent(this, ChatActivity.class);
+            startActivity(intent);
 //        } else if (st.equals("Green")) {
 //            RL.setBackgroundColor(Color.GREEN);
 //        } else if (st.equals("Yellow")) {

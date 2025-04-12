@@ -129,34 +129,30 @@ public class GeminiManager {
      * @param callback  The callback to receive the response or error.
      */
     public void sendTextWithPhotosPrompt(String prompt, ArrayList<Bitmap> photos, GeminiCallback callback) {
-        Log.i(TAG, "sendTextWithFilesPrompt/ prompt: " + prompt);
         List<Part> parts = new ArrayList<>();
         parts.add(new TextPart(prompt));
         for (Bitmap photo : photos) {
             parts.add(new ImagePart(photo));
         }
-        Log.i(TAG, "sendTextWithFilesPrompt/ parts: " + parts);
 
         Content[] content = new Content[1];
         content[0] = new Content(parts);
-        Log.i(TAG, "sendTextWithFilesPrompt/ content: " + content);
 
         gemini.generateContent(content,
                 new Continuation<GenerateContentResponse>() {
                     @NonNull
                     @Override
                     public CoroutineContext getContext() {
-                        Log.i("GeminiManager", "getContext");
                         return EmptyCoroutineContext.INSTANCE;
                     }
 
                     @Override
                     public void resumeWith(@NonNull Object result) {
                         if (result instanceof Result.Failure) {
-                            Log.i("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
+                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
                             callback.onFailure(((Result.Failure) result).exception);
                         } else {
-                            Log.i("GeminiManager", "Success: " + ((GenerateContentResponse) result).getText());
+                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
                     }
