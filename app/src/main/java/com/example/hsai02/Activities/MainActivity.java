@@ -21,9 +21,9 @@ import com.example.hsai02.GeminiManager;
 import com.example.hsai02.R;
 
 public class MainActivity extends AppCompatActivity {
-    EditText eTLanguage, eTWords;
-    TextView tVResult;
-    GeminiManager geminiManager;
+    private EditText eTLanguage, eTWords;
+    private TextView tVResult;
+    private GeminiManager geminiManager;
     private final String TAG = "MainActivity";
 
     @Override
@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
             pD.setMessage("Waiting for response...");
             pD.setCancelable(false);
             pD.show();
-            geminiManager.sendTextPrompt(prompt, new GeminiCallback() {
+            geminiManager.sendTextPrompt(prompt,
+                    new GeminiCallback() {
                 @Override
                 public void onSuccess(String result) {
                     pD.dismiss();

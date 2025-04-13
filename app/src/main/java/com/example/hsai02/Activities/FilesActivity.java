@@ -163,6 +163,13 @@ public class FilesActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * filesPrompt method
+     * <p> Method triggered by the user clicking the "Choose File" button
+     * </p>
+     *
+     * @param view The view that was clicked.
+     */
     public void filesPrompt(View view) {
         if (filesCount != 0) {
             ProgressDialog pD = new ProgressDialog(this);

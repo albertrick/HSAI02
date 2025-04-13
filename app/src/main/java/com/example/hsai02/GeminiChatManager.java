@@ -85,24 +85,22 @@ public class GeminiChatManager {
     public void sendChatMessage(String prompt, GeminiCallback callback) {
         chat.sendMessage(prompt,
                 new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
-                            callback.onSuccess(((GenerateContentResponse) result).getText());
-                        }
-                    }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                if (result instanceof Result.Failure) {
+                    Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                    callback.onFailure(((Result.Failure) result).exception);
+                } else {
+                    Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
+                    callback.onSuccess(((GenerateContentResponse) result).getText());
                 }
-        );
+            }
+        });
     }
-
 }

@@ -15,8 +15,6 @@ import com.google.ai.client.generativeai.type.ImagePart;
 import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.TextPart;
 
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,23 +65,22 @@ public class GeminiManager {
     public void sendTextPrompt(String prompt, GeminiCallback callback) {
         gemini.generateContent(prompt,
                 new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            callback.onSuccess(((GenerateContentResponse) result).getText());
-                        }
-                    }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                if (result instanceof Result.Failure) {
+                    Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                    callback.onFailure(((Result.Failure) result).exception);
+                } else {
+                    callback.onSuccess(((GenerateContentResponse) result).getText());
                 }
-        );
+            }
+        });
     }
 
     /**
@@ -103,23 +100,22 @@ public class GeminiManager {
 
         gemini.generateContent(content,
                 new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            callback.onSuccess(((GenerateContentResponse) result).getText());
-                        }
-                    }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                if (result instanceof Result.Failure) {
+                    Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                    callback.onFailure(((Result.Failure) result).exception);
+                } else {
+                    callback.onSuccess(((GenerateContentResponse) result).getText());
                 }
-        );
+            }
+        });
     }
 
     /**
@@ -141,23 +137,22 @@ public class GeminiManager {
 
         gemini.generateContent(content,
                 new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            callback.onSuccess(((GenerateContentResponse) result).getText());
-                        }
-                    }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                if (result instanceof Result.Failure) {
+                    Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                    callback.onFailure(((Result.Failure) result).exception);
+                } else {
+                    callback.onSuccess(((GenerateContentResponse) result).getText());
                 }
-        );
+            }
+        });
     }
 
     /**
@@ -178,23 +173,22 @@ public class GeminiManager {
 
         gemini.generateContent(content,
                 new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            callback.onSuccess(((GenerateContentResponse) result).getText());
-                        }
-                    }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                if (result instanceof Result.Failure) {
+                    Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                    callback.onFailure(((Result.Failure) result).exception);
+                } else {
+                    callback.onSuccess(((GenerateContentResponse) result).getText());
                 }
-        );
+            }
+        });
     }
 
     /**
@@ -217,22 +211,21 @@ public class GeminiManager {
 
         gemini.generateContent(content,
                 new Continuation<GenerateContentResponse>() {
-                    @NonNull
-                    @Override
-                    public CoroutineContext getContext() {
-                        return EmptyCoroutineContext.INSTANCE;
-                    }
+            @NonNull
+            @Override
+            public CoroutineContext getContext() {
+                return EmptyCoroutineContext.INSTANCE;
+            }
 
-                    @Override
-                    public void resumeWith(@NonNull Object result) {
-                        if (result instanceof Result.Failure) {
-                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
-                            callback.onFailure(((Result.Failure) result).exception);
-                        } else {
-                            callback.onSuccess(((GenerateContentResponse) result).getText());
-                        }
-                    }
+            @Override
+            public void resumeWith(@NonNull Object result) {
+                if (result instanceof Result.Failure) {
+                    Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                    callback.onFailure(((Result.Failure) result).exception);
+                } else {
+                    callback.onSuccess(((GenerateContentResponse) result).getText());
                 }
-        );
+            }
+        });
     }
 }

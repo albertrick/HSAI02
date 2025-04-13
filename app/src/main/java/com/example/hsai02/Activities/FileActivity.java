@@ -141,19 +141,19 @@ public class FileActivity extends AppCompatActivity {
             String prompt = FILE_PROMPT;
             geminiManager.sendTextWithFilePrompt(prompt, bytes, mimeType,
                     new GeminiCallback() {
-                        @Override
-                        public void onSuccess(String result) {
-                            pD.dismiss();
-                            tVSummary.setText(result);
-                        }
+                @Override
+                public void onSuccess(String result) {
+                    pD.dismiss();
+                    tVSummary.setText(result);
+                }
 
-                        @Override
-                        public void onFailure(Throwable error) {
-                            pD.dismiss();
-                            tVSummary.setText("Error: " + error.getMessage());
-                            Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
-                        }
-                    });
+                @Override
+                public void onFailure(Throwable error) {
+                    pD.dismiss();
+                    tVSummary.setText("Error: " + error.getMessage());
+                    Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
+                }
+            });
         }
     }
 

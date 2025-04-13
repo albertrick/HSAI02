@@ -85,7 +85,8 @@ public class ChatActivity extends AppCompatActivity {
         pD.setMessage("Waiting for response...");
         pD.setCancelable(false);
         pD.show();
-        chatManager.sendChatMessage(prompt, new GeminiCallback() {
+        chatManager.sendChatMessage(prompt,
+                new GeminiCallback() {
             @Override
             public void onSuccess(String result) {
                 pD.dismiss();
@@ -112,7 +113,8 @@ public class ChatActivity extends AppCompatActivity {
         pD.setMessage("Waiting for response...");
         pD.setCancelable(false);
         pD.show();
-        chatManager.sendChatMessage(userInput, new GeminiCallback() {
+        chatManager.sendChatMessage(userInput,
+                new GeminiCallback() {
             @Override
             public void onSuccess(String result) {
                 pD.dismiss();

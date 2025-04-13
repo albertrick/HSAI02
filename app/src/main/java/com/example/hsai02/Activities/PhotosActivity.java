@@ -38,12 +38,12 @@ import java.util.ArrayList;
 
 public class PhotosActivity extends AppCompatActivity {
 
-    TextView tVCount, tVDetails;
-    String currentPath, imagePath;
-    Bitmap imageBitmap;
-    GeminiManager geminiManager;
-    int photosCount;
-    ArrayList<Bitmap> photos;
+    private TextView tVCount, tVDetails;
+    private String currentPath, imagePath;
+    private Bitmap imageBitmap;
+    private GeminiManager geminiManager;
+    private int photosCount;
+    private ArrayList<Bitmap> photos;
     private final String TAG = "PhotosActivity";
     private static final int REQUEST_CAMERA_PERMISSION = 101;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 102;
@@ -166,7 +166,8 @@ public class PhotosActivity extends AppCompatActivity {
             pD.setCancelable(false);
             pD.show();
             String prompt = PHOTOS_PROMPT;
-            geminiManager.sendTextWithPhotosPrompt(prompt, photos, new GeminiCallback() {
+            geminiManager.sendTextWithPhotosPrompt(prompt, photos,
+                    new GeminiCallback() {
                 @Override
                 public void onSuccess(String result) {
                     pD.dismiss();

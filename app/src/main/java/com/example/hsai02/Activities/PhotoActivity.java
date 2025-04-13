@@ -37,11 +37,11 @@ import java.io.IOException;
 
 public class PhotoActivity extends AppCompatActivity {
 
-    ImageView iV;
-    TextView tVRecipe;
-    String currentPath;
-    Bitmap imageBitmap;
-    GeminiManager geminiManager;
+    private ImageView iV;
+    private TextView tVRecipe;
+    private String currentPath;
+    private Bitmap imageBitmap;
+    private GeminiManager geminiManager;
     private final String TAG = "PhotoActivity";
     private static final int REQUEST_CAMERA_PERMISSION = 101;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 102;
@@ -140,7 +140,8 @@ public class PhotoActivity extends AppCompatActivity {
             pD.setCancelable(false);
             pD.show();
             String prompt = PHOTO_PROMPT;
-            geminiManager.sendTextWithPhotoPrompt(prompt, imageBitmap, new GeminiCallback() {
+            geminiManager.sendTextWithPhotoPrompt(prompt, imageBitmap,
+                    new GeminiCallback() {
                 @Override
                 public void onSuccess(String result) {
                     pD.dismiss();
