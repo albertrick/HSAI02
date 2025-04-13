@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
         Intent intent;
-        if (id == R.id.menuText) {
+        if (id == R.id.menuExit) {
+            finish();
         } else if (id == R.id.menuPhoto) {
             intent = new Intent(this, PhotoActivity.class);
             startActivity(intent);

@@ -16,4 +16,7 @@
     <item
         android:id="@+id/menuChat"
         android:title="Chat" />
+    <item
+        android:id="@+id/menuExit"
+        android:title="Exit" />
 </menu>
