@@ -37,10 +37,15 @@ public class MainActivity extends AppCompatActivity {
         tVResult.setMovementMethod(new ScrollingMovementMethod());
 
         geminiManager = GeminiManager.getInstance();
-
     }
 
-
+    /**
+     * This method is called when the user clicks the "Send Prompt" button.
+     * It retrieves the language and words from the EditText fields, constructs a prompt,
+     * and sends it to the Gemini AI model.
+     *
+     * @param view The view that was clicked.
+     */
     public void textPrompt(View view) {
         String language = eTLanguage.getText().toString();
         String words = eTWords.getText().toString();
@@ -61,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(String result) {
                     pD.dismiss();
                     tVResult.setText(result);
-                    Log.i(TAG, "textPrompt/ Success");
                 }
 
                 @Override
@@ -72,14 +76,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.main, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -99,12 +100,6 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.menuChat) {
             intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
-//        } else if (st.equals("Green")) {
-//            RL.setBackgroundColor(Color.GREEN);
-//        } else if (st.equals("Yellow")) {
-//            RL.setBackgroundColor(Color.YELLOW);
-//        } else if (st.equals("White")) {
-//            RL.setBackgroundColor(Color.WHITE);
         }
         return super.onOptionsItemSelected(item);
     }

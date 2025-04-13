@@ -1,5 +1,8 @@
 package com.example.hsai02.Activities;
 
+import static com.example.hsai02.Prompts.INGREDIENTS_SCHEMA;
+import static com.example.hsai02.Prompts.PHOTOS_PROMPT;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -59,7 +62,6 @@ public class PhotosActivity extends AppCompatActivity {
 
         photosCount = 0;
         photos = new ArrayList<>();
-
     }
 
 
@@ -99,14 +101,12 @@ public class PhotosActivity extends AppCompatActivity {
     }
 
     /**
-     * takeFull method
-     * <p> Taking a full resolution photo by camera to upload to Firebase Storage
-     * </p>
+     * This method is called when the user clicks the "Add Photo" button.
+     * It opens the camera to take a photo and saves it to a temporary file.
      *
-     * @param view the view that triggered the method
+     * @param view The view that was clicked.
      */
     public void addPhoto(View view) {
-        // creating local temporary file to store the full resolution photo
         String filename = "tempfile";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         try {
@@ -122,13 +122,13 @@ public class PhotosActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             Toast.makeText(PhotosActivity.this,"Failed to create temporary file",Toast.LENGTH_LONG);
+            Log.e(TAG, "addPhoto/ Error: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
-
     /**
-     * Prompting selected image file to Gemini
+     * Add selected image file to image list
      * <p>
      *
      * @param requestCode   The call sign of the intent that requested the result
@@ -153,6 +153,12 @@ public class PhotosActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Prompting the image list to Gemini
+     * <p>
+     *
+     * @param view The view that was clicked.
+     */
     public void photosPrompt(View view) {
         if (photosCount != 0) {
             ProgressDialog pD = new ProgressDialog(this);
@@ -160,97 +166,12 @@ public class PhotosActivity extends AppCompatActivity {
             pD.setMessage("Waiting for response...");
             pD.setCancelable(false);
             pD.show();
-            String dishIngredientsSchema = "{\n" +
-                    "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-                    "  \"title\": \"Dish Ingredients\",\n" +
-                    "  \"description\": \"Schema for ingredients in a dish, designed for a dietary diary.\",\n" +
-                    "  \"type\": \"array\",\n" +
-                    "  \"items\": {\n" +
-                    "    \"type\": \"object\",\n" +
-                    "    \"properties\": {\n" +
-                    "      \"name\": {\n" +
-                    "        \"type\": \"string\",\n" +
-                    "        \"description\": \"The name of the ingredient.\",\n" +
-                    "        \"example\": \"Chicken Breast\"\n" +
-                    "      },\n" +
-                    "      \"quantity\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The quantity of the ingredient used.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 150\n" +
-                    "      },\n" +
-                    "      \"unit\": {\n" +
-                    "        \"type\": \"string\",\n" +
-                    "        \"description\": \"The unit of measurement for the quantity.\",\n" +
-                    "        \"enum\": [\"g\", \"kg\", \"ml\", \"L\", \"piece\", \"cup\", \"tablespoon\", \"teaspoon\", \"oz\", \"lb\"],\n" +
-                    "        \"example\": \"g\"\n" +
-                    "      },\n" +
-                    "      \"calories\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The caloric content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 230\n" +
-                    "      },\n" +
-                    "      \"protein\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The protein content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 30\n" +
-                    "      },\n" +
-                    "      \"carbohydrates\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The carbohydrate content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 0\n" +
-                    "      },\n" +
-                    "      \"fat\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The fat content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 10\n" +
-                    "      },\n" +
-                    "      \"fiber\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The fiber content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 0\n" +
-                    "      },\n" +
-                    "      \"sugar\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The sugar content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 0\n" +
-                    "      },\n" +
-                    "      \"sodium\": {\n" +
-                    "        \"type\": \"number\",\n" +
-                    "        \"description\": \"The sodium content of the ingredient, per the specified quantity.\",\n" +
-                    "        \"minimum\": 0,\n" +
-                    "        \"example\": 70\n" +
-                    "      },\n" +
-                    "      \"notes\": {\n" +
-                    "        \"type\": \"string\",\n" +
-                    "        \"description\": \"Optional notes about the ingredient, such as preparation methods or specific brands.\",\n" +
-                    "        \"example\": \"Skinless, grilled\"\n" +
-                    "      },\n" +
-                    "      \"foodGroup\": {\n" +
-                    "        \"type\": \"string\",\n" +
-                    "        \"description\": \"The food group to which the ingredient belongs.\",\n" +
-                    "        \"enum\": [\"Protein\", \"Vegetable\", \"Fruit\", \"Grain\", \"Dairy\", \"Fat\", \"Spice\", \"Other\"],\n" +
-                    "        \"example\": \"Protein\"\n" +
-                    "      }\n" +
-                    "    },\n" +
-                    "    \"required\": [\"name\", \"quantity\", \"unit\", \"calories\", \"protein\", \"carbohydrates\", \"fat\"]\n" +
-                    "  }\n" +
-                    "}";
-            String prompt = "based on the photos write me the amount of carbs, proteins, fats and calories in the dish.\n" +
-                    "If you can't find any food in the photos, please ask me to take a better photo."+
-                    "return the data in the given schema:" + dishIngredientsSchema;
+            String prompt = PHOTOS_PROMPT;
             geminiManager.sendTextWithPhotosPrompt(prompt, photos, new GeminiCallback() {
                 @Override
                 public void onSuccess(String result) {
                     pD.dismiss();
                     tVDetails.setText(result);
-                    Log.i(TAG, "onActivityResult/ Success");
                 }
 
                 @Override
@@ -263,31 +184,20 @@ public class PhotosActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No photos to send", Toast.LENGTH_LONG).show();
         }
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.main, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
-        Intent intent;
         if (id == R.id.menuPhotos) {
-        } else if (id == R.id.menuText) {
+        } else {
             finish();
-//        } else if (st.equals("Green")) {
-//            RL.setBackgroundColor(Color.GREEN);
-//        } else if (st.equals("Yellow")) {
-//            RL.setBackgroundColor(Color.YELLOW);
-//        } else if (st.equals("White")) {
-//            RL.setBackgroundColor(Color.WHITE);
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

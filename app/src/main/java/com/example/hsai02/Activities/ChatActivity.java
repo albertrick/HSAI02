@@ -1,6 +1,7 @@
 package com.example.hsai02.Activities;
 
-import static com.example.hsai02.SystemPrompt.SYSTEM_PROMPT;
+import static com.example.hsai02.Prompts.CHAT_FIRST_PROMPT;
+import static com.example.hsai02.Prompts.SYSTEM_PROMPT;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,10 +49,15 @@ public class ChatActivity extends AppCompatActivity {
 
         chatManager = GeminiChatManager.getInstance(SYSTEM_PROMPT);
 
-        getNextQuestion();
-
+        getFirstQuestion();
     }
 
+    /**
+     * This method is called when the user clicks the "Send" button.
+     * It retrieves the user input, hides the keyboard, and processes the input.
+     *
+     * @param view The view that was clicked.
+     */
     public void sendUserInput(View view) {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -69,9 +75,11 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-
-    private void getNextQuestion() {
-        String prompt = "תן לי שאלה בנושא רכיבי תצוגה באנדרואיד";
+    /**
+     * This method retrieves the first question from the chat manager and displays it in the TextView.
+     */
+    private void getFirstQuestion() {
+        String prompt = CHAT_FIRST_PROMPT;
         ProgressDialog pD = new ProgressDialog(this);
         pD.setTitle("Sent Prompt");
         pD.setMessage("Waiting for response...");
@@ -81,19 +89,23 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String result) {
                 pD.dismiss();
-                tVGameArea.append("\n" + result + "\n");
-                Log.i(TAG, "textPrompt/ Success");
+                tVGameArea.append(result + "\n");
             }
 
             @Override
             public void onFailure(Throwable error) {
                 pD.dismiss();
-                tVGameArea.append("\nשגיאה: " + error.getMessage() + "\n");
+                tVGameArea.append("שגיאה: " + error.getMessage() + "\n");
                 Log.e(TAG, "textPrompt/ Error: " + error.getMessage());
             }
         });
     }
 
+    /**
+     * This method processes the user input by sending it to the chat manager and displaying the response.
+     *
+     * @param userInput The user input to be processed.
+     */
     private void processUserInput(String userInput) {
         ProgressDialog pD = new ProgressDialog(this);
         pD.setTitle("Sent Prompt");
@@ -105,7 +117,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onSuccess(String result) {
                 pD.dismiss();
                 tVGameArea.append("\n" + result + "\n");
-                Log.i(TAG, "textPrompt/ Success");
             }
 
             @Override
@@ -119,32 +130,16 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.main, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        Intent intent;
         if (id == R.id.menuChat) {
-        } else if (id == R.id.menuText) {
+        } else {
             finish();
-        } else if (id == R.id.menuPhotos) {
-            intent = new Intent(this, PhotosActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.menuFiles) {
-            intent = new Intent(this, FilesActivity.class);
-            startActivity(intent);
-//        } else if (st.equals("Green")) {
-//            RL.setBackgroundColor(Color.GREEN);
-//        } else if (st.equals("Yellow")) {
-//            RL.setBackgroundColor(Color.YELLOW);
-//        } else if (st.equals("White")) {
-//            RL.setBackgroundColor(Color.WHITE);
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

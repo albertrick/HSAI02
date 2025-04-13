@@ -8,12 +8,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.ai.client.generativeai.GenerativeModel;
+import com.google.ai.client.generativeai.type.BlobPart;
 import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.ai.client.generativeai.type.ImagePart;
 import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.TextPart;
 
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +79,6 @@ public class GeminiManager {
                             Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
                             callback.onFailure(((Result.Failure) result).exception);
                         } else {
-                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
                     }
@@ -113,7 +115,6 @@ public class GeminiManager {
                             Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
                             callback.onFailure(((Result.Failure) result).exception);
                         } else {
-                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
                     }
@@ -152,7 +153,6 @@ public class GeminiManager {
                             Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
                             callback.onFailure(((Result.Failure) result).exception);
                         } else {
-                            Log.i(TAG, "Success: " + ((GenerateContentResponse) result).getText());
                             callback.onSuccess(((GenerateContentResponse) result).getText());
                         }
                     }
@@ -160,46 +160,41 @@ public class GeminiManager {
         );
     }
 
-//    /**
-//     * Sends a text prompt along with several files to the Gemini model and receives a text response.
-//     *
-//     * @param prompt    The text prompt to send to the model.
-//     * @param files     The files to send to the model.
-//     * @param callback  The callback to receive the response or error.
-//     */
-//    public void sendTextWithFilesPrompt(String prompt, ArrayList<File> files, GeminiCallback callback) {
-//        Log.i(TAG, "sendTextWithFilesPrompt/ prompt: " + prompt);
-//        List<Part> parts = new ArrayList<>();
-//        parts.add(new TextPart(prompt));
-//        for (File file : files) {
-//            parts.add(new BlobPart(file));
-//        }
-//        Log.i(TAG, "sendTextWithFilesPrompt/ parts: " + parts);
-//
-//        Content[] content = new Content[1];
-//        content[0] = new Content(parts);
-//        Log.i(TAG, "sendTextWithFilesPrompt/ content: " + content);
-//
-//        gemini.generateContent(content,
-//                new Continuation<GenerateContentResponse>() {
-//                    @NonNull
-//                    @Override
-//                    public CoroutineContext getContext() {
-//                        Log.i("GeminiManager", "getContext");
-//                        return EmptyCoroutineContext.INSTANCE;
-//                    }
-//
-//                    @Override
-//                    public void resumeWith(@NonNull Object result) {
-//                        if (result instanceof Result.Failure) {
-//                            Log.i("GeminiManager", "Error: " + ((Result.Failure) result).exception.getMessage());
-//                            callback.onFailure(((Result.Failure) result).exception);
-//                        } else {
-//                            Log.i("GeminiManager", "Success: " + ((GenerateContentResponse) result).getText());
-//                            callback.onSuccess(((GenerateContentResponse) result).getText());
-//                        }
-//                    }
-//                }
-//        );
-//    }
+    /**
+     * Sends a text prompt along with a file to the Gemini model and receives a text response.
+     *
+     * @param prompt    The text prompt to send to the model.
+     * @param bytes     The file to send to the model.
+     * @param mimeType  The MIME type of the file.
+     * @param callback  The callback to receive the response or error.
+     */
+    public void sendTextWithFilePrompt(String prompt, byte[] bytes, String mimeType, GeminiCallback callback) {
+        List<Part> parts = new ArrayList<>();
+        parts.add(new TextPart(prompt));
+        parts.add(new BlobPart(mimeType, bytes));
+
+        Content[] content = new Content[1];
+        content[0] = new Content(parts);
+
+        gemini.generateContent(content,
+                new Continuation<GenerateContentResponse>() {
+                    @NonNull
+                    @Override
+                    public CoroutineContext getContext() {
+                        return EmptyCoroutineContext.INSTANCE;
+                    }
+
+                    @Override
+                    public void resumeWith(@NonNull Object result) {
+                        if (result instanceof Result.Failure) {
+                            Log.i(TAG, "Error: " + ((Result.Failure) result).exception.getMessage());
+                            callback.onFailure(((Result.Failure) result).exception);
+                        } else {
+                            callback.onSuccess(((GenerateContentResponse) result).getText());
+                        }
+                    }
+                }
+        );
+    }
+
 }

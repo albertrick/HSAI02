@@ -36,13 +36,17 @@ public class GeminiChatManager {
     private Chat chat;
     private final String TAG = "GeminiChatManager";
 
+    /**
+     * Initializes the Gemini model and starts a chat session.
+     */
     private void startChat() {
         chat = gemini.startChat(Collections.emptyList());
     }
 
     /**
-     * Private constructor to enforce the Singleton pattern.
-     * Initializes the {@link GenerativeModel} with the specified model name and API key.
+     * Private constructor to initialize the Gemini model with a system prompt.
+     *
+     * @param systemPrompt The system prompt to initialize the model.
      */
     private GeminiChatManager(String systemPrompt) {
         List<Part> parts = new ArrayList<Part>();

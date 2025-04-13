@@ -1,5 +1,7 @@
 package com.example.hsai02.Activities;
 
+import static com.example.hsai02.Prompts.PHOTO_PROMPT;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -93,14 +95,12 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     /**
-     * takeFull method
-     * <p> Taking a full resolution photo by camera to upload to Firebase Storage
-     * </p>
+     * This method is called when the user clicks the "Take Photo" button.
+     * It creates a temporary file for the photo and starts the camera intent to capture the image.
      *
-     * @param view the view that triggered the method
+     * @param view The view that was clicked.
      */
     public void photoPrompt(View view) {
-        // creating local temporary file to store the full resolution photo
         String filename = "tempfile";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         try {
@@ -139,15 +139,12 @@ public class PhotoActivity extends AppCompatActivity {
                 pD.setMessage("Waiting for response...");
                 pD.setCancelable(false);
                 pD.show();
-                String prompt = "כתוב לי מהו הפרי או הירק שצולם ובנוסף תן לי מתכון אשר כולל אותו.\n" +
-                        "אם אתה לא מוצא פרי או ירק בתמונה תן לי הנחיה לצלם את התמונה מחדש,\n" +
-                        "כך שהפרי או הירק יופיע בבירור בתמונה.";
+                String prompt = PHOTO_PROMPT;
                 geminiManager.sendTextWithPhotoPrompt(prompt, imageBitmap, new GeminiCallback() {
                     @Override
                     public void onSuccess(String result) {
                         pD.dismiss();
                         tVRecipe.setText(result);
-                        Log.i(TAG, "onActivityResult/ Success");
                     }
 
                     @Override
@@ -157,32 +154,21 @@ public class PhotoActivity extends AppCompatActivity {
                         Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
                     }
                 });
-
             }
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.main, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
-        Intent intent;
         if (id == R.id.menuPhoto) {
-        } else if (id == R.id.menuText) {
+        } else {
             finish();
-//        } else if (st.equals("Green")) {
-//            RL.setBackgroundColor(Color.GREEN);
-//        } else if (st.equals("Yellow")) {
-//            RL.setBackgroundColor(Color.YELLOW);
-//        } else if (st.equals("White")) {
-//            RL.setBackgroundColor(Color.WHITE);
         }
         return super.onOptionsItemSelected(item);
     }

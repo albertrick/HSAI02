@@ -1,5 +1,7 @@
 package com.example.hsai02.Activities;
 
+import static com.example.hsai02.Prompts.FILE_PROMPT;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -38,9 +40,12 @@ import com.example.hsai02.GeminiCallback;
 import com.example.hsai02.GeminiManager;
 import com.example.hsai02.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,41 +58,27 @@ import java.util.Locale;
 
 public class FilesActivity extends AppCompatActivity {
 
-    TextView tVCount, tVDetails;
-    String currentPath, imagePath;
-    Bitmap imageBitmap;
-    GeminiManager geminiManager;
-    int filesCount;
-    ArrayList<File> files;
-    ArrayList<Bitmap> photos;
+    private TextView tVFileData, tVSummary;
+    private GeminiManager geminiManager;
     private final String TAG = "FilesActivity";
-    private static final int REQUEST_CAMERA_PERMISSION = 101;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 102;
-    private static final int REQUEST_FULL_IMAGE_CAPTURE = 202;
+    private static final int FILE_PICKER_REQUEST_CODE = 401;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
 
-        tVCount = findViewById(R.id.tVCount);
-        tVDetails = findViewById(R.id.tVDetails);
-        tVDetails.setMovementMethod(new ScrollingMovementMethod());
+        tVFileData = findViewById(R.id.tVFileData);
+        tVSummary = findViewById(R.id.tVSummary);
+        tVSummary.setMovementMethod(new ScrollingMovementMethod());
 
         geminiManager = GeminiManager.getInstance();
-
-        filesCount = 0;
-        files = new ArrayList<>();
-        photos = new ArrayList<>();
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-        }
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE_PERMISSION);
         }
@@ -105,11 +96,6 @@ public class FilesActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE_PERMISSION) {
             if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 Toast.makeText(this, "Gallery permission denied", Toast.LENGTH_SHORT).show();
@@ -118,74 +104,20 @@ public class FilesActivity extends AppCompatActivity {
     }
 
     /**
-     * takeFull method
-     * <p> Taking a full resolution photo by camera to upload to Firebase Storage
+     * filePrompt method
+     * <p> Method triggered by the user clicking the "Choose File" button
      * </p>
      *
-     * @param view the view that triggered the method
+     * @param view The view that was clicked.
      */
-    public void addFile(View view) {
-        // creating local temporary file to store the full resolution photo
-        String filename = "tempfile";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        try {
-            File imgFile = File.createTempFile(filename,".jpg",storageDir);
-            imagePath = imgFile.getAbsolutePath();
-            currentPath = imgFile.getParentFile().getAbsolutePath();
-            Uri imageUri = FileProvider.getUriForFile(FilesActivity.this,"com.example.hsai02.fileprovider",imgFile);
-            Intent takePicIntent = new Intent();
-            takePicIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            takePicIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,imageUri);
-            if (takePicIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(takePicIntent, REQUEST_FULL_IMAGE_CAPTURE);
-            }
-        } catch (IOException e) {
-            Toast.makeText(FilesActivity.this,"Failed to create temporary file",Toast.LENGTH_LONG);
-            throw new RuntimeException(e);
-        }
+    public void filePrompt(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        startActivityForResult(intent, FILE_PICKER_REQUEST_CODE);
     }
 
     /**
-     * saveImageAsPdf method
-     * <p> Saving the image as a PDF file
-     * </p>
-     *
-     * @param bitmap the bitmap to save as a PDF
-     * @return the file object of the saved PDF
-     */
-    private File saveImageAsPdf(Bitmap bitmap) {
-        PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
-        PdfDocument.Page page = document.startPage(pageInfo);
-        Canvas canvas = page.getCanvas();
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
-        canvas.drawPaint(paint);
-        canvas.drawBitmap(bitmap, 0, 0, null);
-        document.finishPage(page);
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "IMG_" + timeStamp + ".pdf";
-        File file = new File(currentPath, fileName);;
-        Log.i(TAG, "saveImageAsPdf/ File path: " + file.getAbsolutePath());
-
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            document.writeTo(fos);
-            document.close();
-            fos.close();
-            Log.i(TAG, "saveImageAsPdf/ PDF saved to: " + file.getAbsolutePath());
-            return file; // Return the File object
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "saveImageAsPdf/ Error saving PDF: " + e.getMessage());
-            Toast.makeText(this, "Error saving PDF.", Toast.LENGTH_SHORT).show();
-            return null; // Return null if there's an error
-        }
-    }
-
-    /**
-     * Prompting selected image file to Gemini
+     * Prompting selected file to Gemini
      * <p>
      *
      * @param requestCode   The call sign of the intent that requested the result
@@ -196,81 +128,85 @@ public class FilesActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data_back) {
         super.onActivityResult(requestCode, resultCode, data_back);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_FULL_IMAGE_CAPTURE) {
-                imageBitmap = BitmapFactory.decodeFile(imagePath);
-//                File pdfFile = saveImageAsPdf(imageBitmap);
-//                if (pdfFile != null) {
-//                    filesCount++;
-//                    files.add(pdfFile);
-//                    Toast.makeText(this, "File added to files list", Toast.LENGTH_LONG).show();
-//                    tVCount.setText("Number of files: " + filesCount);
-//                } else {
-//                    Toast.makeText(this, "Error saving image as PDF.", Toast.LENGTH_LONG).show();
-//                }
-                if (imageBitmap != null) {
-                    filesCount++;
-                    photos.add(imageBitmap);
-                    Toast.makeText(this, "Photo added to files list", Toast.LENGTH_LONG).show();
-                    tVCount.setText("Number of photos: " + filesCount);
-                } else {
-                    Toast.makeText(this, "Error saving image as PDF.", Toast.LENGTH_LONG).show();
-                }
+            if (requestCode == FILE_PICKER_REQUEST_CODE) {
+                if (data_back != null) {
+                    Uri fileUri = data_back.getData();
+                    String mimeType = getContentResolver().getType(fileUri);
+                    String path = fileUri.getPath();
+                    String fileName = path.substring(1+path.lastIndexOf('/'));
 
+                    tVFileData.setText("File chosen:\n" +
+                            "NAME: " + fileName + "\n" +
+                            "MIME Type: " + mimeType);
+
+                    byte[] bytes = null;
+                    try {
+                        bytes = getBytes(fileUri);
+                    } catch (Exception e) {
+                        Log.i(TAG, "onActivityResult/ bytes: "+e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                    if (bytes == null) {
+                        tVSummary.setText("Error: File is empty");
+                        return;
+                    }
+                    ProgressDialog pD = new ProgressDialog(FilesActivity.this);
+                    pD.setTitle("Sent Prompt");
+                    pD.setMessage("Waiting for response...");
+                    pD.setCancelable(false);
+                    pD.show();
+                    String prompt = FILE_PROMPT;
+                    geminiManager.sendTextWithFilePrompt(prompt, bytes, mimeType,
+                            new GeminiCallback() {
+                        @Override
+                        public void onSuccess(String result) {
+                            pD.dismiss();
+                            tVSummary.setText(result);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable error) {
+                            pD.dismiss();
+                            tVSummary.setText("Error: " + error.getMessage());
+                            Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
+                        }
+                    });
+                }
             }
         }
     }
 
-    public void filesPrompt(View view) {
-        if (filesCount != 0) {
-        ProgressDialog pD = new ProgressDialog(this);
-        pD.setTitle("Sent Prompt");
-        pD.setMessage("Waiting for response...");
-        pD.setCancelable(false);
-        pD.show();
-        String prompt = "describe what is the item you get from the photos";
-//        String prompt = "כתוב לי מהו הפרי או הירק שצולם ובנוסף תן לי מתכון אשר כולל אותו.\n" +
-//                "אם אתה לא מוצא פרי או ירק בתמונה תן לי הנחיה לצלם את התמונה מחדש כך שהפרי או הירק יופיע בבירור בתמונה.";
-        geminiManager.sendTextWithPhotosPrompt(prompt, photos, new GeminiCallback() {
-            @Override
-            public void onSuccess(String result) {
-                pD.dismiss();
-                tVDetails.setText(result);
-                Log.i(TAG, "onActivityResult/ Success");
-            }
-
-            @Override
-            public void onFailure(Throwable error) {
-                pD.dismiss();
-                tVDetails.setText("Error: " + error.getMessage());
-                Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
-            }
-        });
-        } else {
-            Toast.makeText(this, "No files to send", Toast.LENGTH_LONG).show();
+    /**
+     * getBytes method
+     * <p> Method to convert the file to bytes
+     * </p>
+     *
+     * @param fileUri The uri of the file
+     * @return The byte array of the file
+     */
+    private byte[] getBytes(Uri fileUri) throws IOException {
+        InputStream iStream =   getContentResolver().openInputStream(fileUri);
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = iStream.read(buffer);
+        while (len != -1) {
+            byteBuffer.write(buffer, 0, len);
+            len = iStream.read(buffer);
         }
-
+        return byteBuffer.toByteArray();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.main, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
-        Intent intent;
         if (id == R.id.menuFiles) {
-        } else if (id == R.id.menuText) {
+        } else {
             finish();
-//        } else if (st.equals("Green")) {
-//            RL.setBackgroundColor(Color.GREEN);
-//        } else if (st.equals("Yellow")) {
-//            RL.setBackgroundColor(Color.YELLOW);
-//        } else if (st.equals("White")) {
-//            RL.setBackgroundColor(Color.WHITE);
         }
         return super.onOptionsItemSelected(item);
     }
