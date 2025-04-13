@@ -2,10 +2,12 @@ package com.example.hsai02.Activities;
 
 import static com.example.hsai02.Prompts.FILE_PROMPT;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -132,9 +135,10 @@ public class FilesActivity extends AppCompatActivity {
                 if (data_back != null) {
                     Uri fileUri = data_back.getData();
                     String mimeType = getContentResolver().getType(fileUri);
-                    String path = fileUri.getPath();
-                    String fileName = path.substring(1+path.lastIndexOf('/'));
 
+                    Cursor c = getContentResolver().query(fileUri, null, null, null, null);
+                    c.moveToFirst();
+                    @SuppressLint("Range") String fileName =  c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                     tVFileData.setText("File chosen:\n" +
                             "NAME: " + fileName + "\n" +
                             "MIME Type: " + mimeType);
