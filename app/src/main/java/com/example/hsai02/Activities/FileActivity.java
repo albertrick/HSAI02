@@ -1,6 +1,5 @@
 package com.example.hsai02.Activities;
 
-import static com.example.hsai02.Prompts.FILES_COMPARISON_PROMPT;
 import static com.example.hsai02.Prompts.FILE_PROMPT;
 
 import android.annotation.SuppressLint;
@@ -9,17 +8,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -35,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -45,46 +34,27 @@ import com.example.hsai02.GeminiManager;
 import com.example.hsai02.R;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
 
-public class FilesActivity extends AppCompatActivity {
+public class FileActivity extends AppCompatActivity {
 
-    private TextView tVFilesCount, tVCompare;
+    private TextView tVFileData, tVSummary;
     private GeminiManager geminiManager;
-    private int filesCount;
-    private ArrayList<byte[]> files;
-    private ArrayList<String> mimeTypes;
-    private final String TAG = "FilesActivity";
+    private final String TAG = "FileActivity";
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 102;
     private static final int FILE_PICKER_REQUEST_CODE = 401;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_files);
+        setContentView(R.layout.activity_file);
 
-        tVFilesCount = findViewById(R.id.tVFilesCount);
-        tVCompare = findViewById(R.id.tVCompare);
-        tVCompare.setMovementMethod(new ScrollingMovementMethod());
+        tVFileData = findViewById(R.id.tVFileData);
+        tVSummary = findViewById(R.id.tVSummary);
+        tVSummary.setMovementMethod(new ScrollingMovementMethod());
 
         geminiManager = GeminiManager.getInstance();
-
-        filesCount = 0;
-        files = new ArrayList<>();
-        mimeTypes = new ArrayList<>();
     }
 
     @Override
@@ -121,7 +91,7 @@ public class FilesActivity extends AppCompatActivity {
      *
      * @param view The view that was clicked.
      */
-    public void addFile(View view) {
+    public void filePrompt(View view) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         startActivityForResult(intent, FILE_PICKER_REQUEST_CODE);
@@ -144,6 +114,14 @@ public class FilesActivity extends AppCompatActivity {
             Uri fileUri = data_back.getData();
             String mimeType = getContentResolver().getType(fileUri);
 
+            Cursor c = getContentResolver().query(fileUri, null, null, null, null);
+            c.moveToFirst();
+            @SuppressLint("Range")
+            String fileName =  c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            tVFileData.setText("File chosen:\n" +
+                    "NAME: " + fileName + "\n" +
+                    "MIME Type: " + mimeType);
+
             byte[] bytes = null;
             try {
                 bytes = getBytes(fileUri);
@@ -152,42 +130,30 @@ public class FilesActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             if (bytes == null) {
-                Toast.makeText(this, "Error reading file", Toast.LENGTH_LONG).show();
+                tVSummary.setText("Error: File is empty");
                 return;
-            } else {
-                filesCount++;
-                files.add(bytes);
-                mimeTypes.add(mimeType);
-                tVFilesCount.setText("Number of files: " + filesCount);
             }
-        }
-    }
-
-    public void filesPrompt(View view) {
-        if (filesCount != 0) {
-            ProgressDialog pD = new ProgressDialog(this);
+            ProgressDialog pD = new ProgressDialog(FileActivity.this);
             pD.setTitle("Sent Prompt");
             pD.setMessage("Waiting for response...");
             pD.setCancelable(false);
             pD.show();
-            String prompt = FILES_COMPARISON_PROMPT;
-            geminiManager.sendTextWithFilesPrompt(prompt, files, mimeTypes,
+            String prompt = FILE_PROMPT;
+            geminiManager.sendTextWithFilePrompt(prompt, bytes, mimeType,
                     new GeminiCallback() {
-                @Override
-                public void onSuccess(String result) {
-                    pD.dismiss();
-                    tVCompare.setText(result);
-                }
+                        @Override
+                        public void onSuccess(String result) {
+                            pD.dismiss();
+                            tVSummary.setText(result);
+                        }
 
-                @Override
-                public void onFailure(Throwable error) {
-                    pD.dismiss();
-                    tVCompare.setText("Error: " + error.getMessage());
-                    Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
-                }
-            });
-        } else {
-            Toast.makeText(this, "No files to send", Toast.LENGTH_LONG).show();
+                        @Override
+                        public void onFailure(Throwable error) {
+                            pD.dismiss();
+                            tVSummary.setText("Error: " + error.getMessage());
+                            Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
+                        }
+                    });
         }
     }
 
@@ -211,6 +177,7 @@ public class FilesActivity extends AppCompatActivity {
         return byteBuffer.toByteArray();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -219,7 +186,7 @@ public class FilesActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
-        if (id == R.id.menuFiles) {
+        if (id == R.id.menuFile) {
         } else {
             finish();
         }

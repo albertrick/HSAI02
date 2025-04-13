@@ -2,10 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context=".Activities.FilesActivity">
+    tools:context=".Activities.FileActivity">
 
     <Space
         android:layout_width="0dp"
@@ -30,7 +31,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Files prompt"
+            android:text="File prompt"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -40,13 +41,13 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/tVFilesCount"
+            android:id="@+id/tVFileData"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="1.5"
             android:ems="10"
-            android:text="Number of files: 0"
-            android:gravity="center" />
+            android:gravity="center"
+            android:text="No file selected" />
 
         <Space
             android:layout_width="match_parent"
@@ -57,20 +58,8 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:onClick="addFile"
-            android:text="Add File" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:onClick="filesPrompt"
-            android:text="Prompt" />
+            android:onClick="filePrompt"
+            android:text="Choose file and Prompt" />
 
         <Space
             android:layout_width="match_parent"
@@ -78,12 +67,12 @@
             android:layout_weight="0.5" />
 
         <TextView
-            android:id="@+id/tVCompare"
+            android:id="@+id/tVSummary"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="6"
+            android:layout_weight="7"
             android:gravity="center"
-            android:hint="The comparizon result will be displayed here..."
+            android:hint="The summarize of the file will be displayed here..."
             android:scrollbars="vertical"
             android:verticalScrollbarPosition="defaultPosition" />
 

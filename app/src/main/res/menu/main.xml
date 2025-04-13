@@ -11,6 +11,9 @@
         android:id="@+id/menuPhotos"
         android:title="Photos prompt" />
     <item
+        android:id="@+id/menuFile"
+        android:title="File prompt" />
+    <item
         android:id="@+id/menuFiles"
         android:title="Files prompt" />
     <item

@@ -95,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.menuPhotos) {
             intent = new Intent(this, PhotosActivity.class);
             startActivity(intent);
+        } else if (id == R.id.menuFile) {
+            intent = new Intent(this, FileActivity.class);
+            startActivity(intent);
         } else if (id == R.id.menuFiles) {
             intent = new Intent(this, FilesActivity.class);
             startActivity(intent);

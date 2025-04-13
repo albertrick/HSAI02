@@ -95,7 +95,7 @@ public class PhotosActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE_PERMISSION) {
             if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                Toast.makeText(this, "Gallery permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "External storage permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -138,17 +138,16 @@ public class PhotosActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data_back) {
         super.onActivityResult(requestCode, resultCode, data_back);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_FULL_IMAGE_CAPTURE) {
-                imageBitmap = BitmapFactory.decodeFile(imagePath);
-                if (imageBitmap != null) {
-                    photosCount++;
-                    photos.add(imageBitmap);
-                    Toast.makeText(this, "Photo added to photos list", Toast.LENGTH_LONG).show();
-                    tVCount.setText("Number of photos: " + photosCount);
-                } else {
-                    Toast.makeText(this, "Error saving image to list.", Toast.LENGTH_LONG).show();
-                }
+        if ((resultCode == Activity.RESULT_OK)
+                && (requestCode == REQUEST_FULL_IMAGE_CAPTURE)) {
+            imageBitmap = BitmapFactory.decodeFile(imagePath);
+            if (imageBitmap != null) {
+                photosCount++;
+                photos.add(imageBitmap);
+                Toast.makeText(this, "Photo added to photos list", Toast.LENGTH_LONG).show();
+                tVCount.setText("Number of photos: " + photosCount);
+            } else {
+                Toast.makeText(this, "Error saving image to list.", Toast.LENGTH_LONG).show();
             }
         }
     }

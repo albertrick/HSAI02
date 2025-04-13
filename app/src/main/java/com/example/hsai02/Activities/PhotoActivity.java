@@ -89,7 +89,7 @@ public class PhotoActivity extends AppCompatActivity {
         }
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE_PERMISSION) {
             if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                Toast.makeText(this, "Gallery permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "External storage permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -130,31 +130,30 @@ public class PhotoActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data_back) {
         super.onActivityResult(requestCode, resultCode, data_back);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_FULL_IMAGE_CAPTURE) {
-                imageBitmap = BitmapFactory.decodeFile(currentPath);
-                iV.setImageBitmap(imageBitmap);
-                ProgressDialog pD = new ProgressDialog(this);
-                pD.setTitle("Sent Prompt");
-                pD.setMessage("Waiting for response...");
-                pD.setCancelable(false);
-                pD.show();
-                String prompt = PHOTO_PROMPT;
-                geminiManager.sendTextWithPhotoPrompt(prompt, imageBitmap, new GeminiCallback() {
-                    @Override
-                    public void onSuccess(String result) {
-                        pD.dismiss();
-                        tVRecipe.setText(result);
-                    }
+        if ((resultCode == Activity.RESULT_OK)
+                && (requestCode == REQUEST_FULL_IMAGE_CAPTURE)) {
+            imageBitmap = BitmapFactory.decodeFile(currentPath);
+            iV.setImageBitmap(imageBitmap);
+            ProgressDialog pD = new ProgressDialog(this);
+            pD.setTitle("Sent Prompt");
+            pD.setMessage("Waiting for response...");
+            pD.setCancelable(false);
+            pD.show();
+            String prompt = PHOTO_PROMPT;
+            geminiManager.sendTextWithPhotoPrompt(prompt, imageBitmap, new GeminiCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    pD.dismiss();
+                    tVRecipe.setText(result);
+                }
 
-                    @Override
-                    public void onFailure(Throwable error) {
-                        pD.dismiss();
-                        tVRecipe.setText("Error: " + error.getMessage());
-                        Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Throwable error) {
+                    pD.dismiss();
+                    tVRecipe.setText("Error: " + error.getMessage());
+                    Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
+                }
+            });
         }
     }
 
