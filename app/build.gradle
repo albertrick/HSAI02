@@ -2,6 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
 android {
     namespace 'com.example.hsai02'
     compileSdk 35
@@ -14,6 +22,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "Gemini_API_Key", "\"${localProperties.getProperty('api.key', '')}\""
     }
 
     buildTypes {
@@ -26,6 +35,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    buildFeatures {
+        buildConfig true // This line enables BuildConfig generation
+    }
 }
 
 dependencies {
@@ -35,6 +47,7 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation libs.common
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

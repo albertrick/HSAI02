@@ -1,5 +1,6 @@
 package com.example.hsai02.Activities;
 
+import static com.example.hsai02.Prompts.FILES_COMPARISON_PROMPT;
 import static com.example.hsai02.Prompts.FILE_PROMPT;
 
 import android.annotation.SuppressLint;
@@ -25,9 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hsai02.GeminiCallback;
 import com.example.hsai02.GeminiManager;
@@ -36,25 +34,33 @@ import com.example.hsai02.R;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class FileActivity extends AppCompatActivity {
 
-    private TextView tVFileData, tVSummary;
+    private TextView tVFilesCount, tVCompare;
     private GeminiManager geminiManager;
-    private final String TAG = "FileActivity";
+    private int filesCount;
+    private ArrayList<byte[]> files;
+    private ArrayList<String> mimeTypes;
+    private final String TAG = "FilesActivity";
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 102;
     private static final int FILE_PICKER_REQUEST_CODE = 401;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file);
+        setContentView(R.layout.activity_files);
 
-        tVFileData = findViewById(R.id.tVFileData);
-        tVSummary = findViewById(R.id.tVSummary);
-        tVSummary.setMovementMethod(new ScrollingMovementMethod());
+        tVFilesCount = findViewById(R.id.tVFilesCount);
+        tVCompare = findViewById(R.id.tVCompare);
+        tVCompare.setMovementMethod(new ScrollingMovementMethod());
 
         geminiManager = GeminiManager.getInstance();
+
+        filesCount = 0;
+        files = new ArrayList<>();
+        mimeTypes = new ArrayList<>();
     }
 
     @Override
@@ -91,7 +97,7 @@ public class FileActivity extends AppCompatActivity {
      *
      * @param view The view that was clicked.
      */
-    public void filePrompt(View view) {
+    public void addFile(View view) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         startActivityForResult(intent, FILE_PICKER_REQUEST_CODE);
@@ -114,14 +120,6 @@ public class FileActivity extends AppCompatActivity {
             Uri fileUri = data_back.getData();
             String mimeType = getContentResolver().getType(fileUri);
 
-            Cursor c = getContentResolver().query(fileUri, null, null, null, null);
-            c.moveToFirst();
-            @SuppressLint("Range")
-            String fileName =  c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-            tVFileData.setText("File chosen:\n" +
-                    "NAME: " + fileName + "\n" +
-                    "MIME Type: " + mimeType);
-
             byte[] bytes = null;
             try {
                 bytes = getBytes(fileUri);
@@ -130,30 +128,49 @@ public class FileActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             if (bytes == null) {
-                tVSummary.setText("Error: File is empty");
+                Toast.makeText(this, "Error reading file", Toast.LENGTH_LONG).show();
                 return;
+            } else {
+                filesCount++;
+                files.add(bytes);
+                mimeTypes.add(mimeType);
+                tVFilesCount.setText("Number of files: " + filesCount);
             }
-            ProgressDialog pD = new ProgressDialog(FileActivity.this);
+        }
+    }
+
+    /**
+     * filesPrompt method
+     * <p> Method triggered by the user clicking the "Choose File" button
+     * </p>
+     *
+     * @param view The view that was clicked.
+     */
+    public void filesPrompt(View view) {
+        if (filesCount != 0) {
+            ProgressDialog pD = new ProgressDialog(this);
             pD.setTitle("Sent Prompt");
             pD.setMessage("Waiting for response...");
             pD.setCancelable(false);
             pD.show();
-            String prompt = FILE_PROMPT;
-            geminiManager.sendTextWithFilePrompt(prompt, bytes, mimeType,
+            String prompt = FILES_COMPARISON_PROMPT;
+            geminiManager.sendTextWithFilesPrompt(prompt, files, mimeTypes,
                     new GeminiCallback() {
-                @Override
-                public void onSuccess(String result) {
-                    pD.dismiss();
-                    tVSummary.setText(result);
-                }
+                        @Override
+                        public void onSuccess(String result) {
+                            pD.dismiss();
+                            tVCompare.setText(result);
+                        }
 
-                @Override
-                public void onFailure(Throwable error) {
-                    pD.dismiss();
-                    tVSummary.setText("Error: " + error.getMessage());
-                    Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
-                }
-            });
+                        @Override
+                        public void onFailure(Throwable error) {
+                            pD.dismiss();
+                            tVCompare.setText("Error: " + error.getMessage());
+                            Log.e(TAG, "onActivityResult/ Error: " + error.getMessage());
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "No files to send", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -177,7 +194,6 @@ public class FileActivity extends AppCompatActivity {
         return byteBuffer.toByteArray();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -186,7 +202,7 @@ public class FileActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         int id = item.getItemId();
-        if (id == R.id.menuFile) {
+        if (id == R.id.menuFiles) {
         } else {
             finish();
         }

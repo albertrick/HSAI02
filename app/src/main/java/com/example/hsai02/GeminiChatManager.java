@@ -53,7 +53,7 @@ public class GeminiChatManager {
         parts.add(new TextPart(systemPrompt));
         gemini = new GenerativeModel(
                 "gemini-2.0-flash",
-                Gemini_API_Key,
+                BuildConfig.Gemini_API_Key,
                 null,
                 null,
                 new RequestOptions(),
