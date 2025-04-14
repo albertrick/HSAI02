@@ -29,9 +29,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hsai02.GeminiCallback;
 import com.example.hsai02.GeminiChatManager;
+import com.example.hsai02.MasterActivity;
 import com.example.hsai02.R;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends MasterActivity {
 
     private TextView tVGameArea;
     private EditText eTUserInput;
@@ -130,18 +131,4 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menuChat) {
-        } else {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

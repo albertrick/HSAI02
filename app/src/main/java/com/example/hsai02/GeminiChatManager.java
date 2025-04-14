@@ -1,8 +1,6 @@
 package com.example.hsai02;
 
 
-import static com.example.hsai02.Keys.Gemini_API_Key;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;

@@ -18,9 +18,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.hsai02.GeminiCallback;
 import com.example.hsai02.GeminiManager;
+import com.example.hsai02.MasterActivity;
 import com.example.hsai02.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends MasterActivity {
     private EditText eTLanguage, eTWords;
     private TextView tVResult;
     private GeminiManager geminiManager;
@@ -77,36 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        int id = item.getItemId();
-        Intent intent;
-        if (id == R.id.menuExit) {
-            finish();
-        } else if (id == R.id.menuPhoto) {
-            intent = new Intent(this, PhotoActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.menuPhotos) {
-            intent = new Intent(this, PhotosActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.menuFile) {
-            intent = new Intent(this, FileActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.menuFiles) {
-            intent = new Intent(this, FilesActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.menuChat) {
-            intent = new Intent(this, ChatActivity.class);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 }

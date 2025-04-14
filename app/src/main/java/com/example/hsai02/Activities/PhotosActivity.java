@@ -30,13 +30,14 @@ import androidx.core.content.FileProvider;
 
 import com.example.hsai02.GeminiCallback;
 import com.example.hsai02.GeminiManager;
+import com.example.hsai02.MasterActivity;
 import com.example.hsai02.R;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PhotosActivity extends AppCompatActivity {
+public class PhotosActivity extends MasterActivity {
 
     private TextView tVCount, tVDetails;
     private String currentPath, imagePath;
@@ -186,18 +187,4 @@ public class PhotosActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        int id = item.getItemId();
-        if (id == R.id.menuPhotos) {
-        } else {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

@@ -1,7 +1,5 @@
 package com.example.hsai02;
 
-import static com.example.hsai02.Keys.Gemini_API_Key;
-
 import android.graphics.Bitmap;
 import android.util.Log;
 

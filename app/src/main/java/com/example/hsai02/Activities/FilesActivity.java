@@ -42,6 +42,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hsai02.GeminiCallback;
 import com.example.hsai02.GeminiManager;
+import com.example.hsai02.MasterActivity;
 import com.example.hsai02.R;
 
 import java.io.ByteArrayOutputStream;
@@ -60,7 +61,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 
-public class FilesActivity extends AppCompatActivity {
+public class FilesActivity extends MasterActivity {
 
     private TextView tVFilesCount, tVCompare;
     private GeminiManager geminiManager;
@@ -218,18 +219,4 @@ public class FilesActivity extends AppCompatActivity {
         return byteBuffer.toByteArray();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        int id = item.getItemId();
-        if (id == R.id.menuFiles) {
-        } else {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
